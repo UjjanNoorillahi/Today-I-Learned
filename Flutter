@@ -1,1 +1,113 @@
 List of Things that I learned Daily basis.
+
+
+// custom DropDown FormField Class
+
+import 'package:flutter/material.dart';
+
+class CustomDropdownFormField extends StatefulWidget {
+  final String hintText;
+  final List<String> items;
+  final String? selectedValue;
+  final Function(String?)? onChanged;
+  final String? Function(String?)? validator; // Optional validator
+
+  const CustomDropdownFormField({
+    Key? key,
+    required this.hintText,
+    required this.items,
+    this.selectedValue,
+    this.onChanged,
+    this.validator, // Accepting validator as an optional parameter
+  }) : super(key: key);
+
+  @override
+  _CustomDropdownFormFieldState createState() => _CustomDropdownFormFieldState();
+}
+
+class _CustomDropdownFormFieldState extends State<CustomDropdownFormField> {
+  String? _selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValue = widget.selectedValue; // Initialize with provided value if any
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: _selectedValue,
+      validator: widget.validator, // Optional validator
+      decoration: InputDecoration(
+        hintText: widget.hintText,
+        hintStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w300,
+        ),
+        filled: true,
+        fillColor: Colors.grey[200],
+        contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: const BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: const BorderSide(
+            color: Colors.blue,
+            width: 2.0,
+          ),
+        ),
+      ),
+      icon: Icon(Icons.arrow_drop_down, color: Colors.grey[700]),
+      isExpanded: true,
+      items: widget.items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(
+            item,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+          ),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedValue = value; // Update the selected value
+        });
+        if (widget.onChanged != null) {
+          widget.onChanged!(value); // Call the callback if provided
+        }
+      },
+    );
+  }
+}
+
+
+
+
+// How to Use it
+ CustomDropdownFormField(
+                hintText: "Select Category",
+                items: ["Home", "Car", "Furniture"],
+                onChanged: (value) {
+                  print("Selected category: $value");
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select a category';
+                  }
+                  return null;
+                },
+              ),
